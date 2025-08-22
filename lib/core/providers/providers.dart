@@ -26,6 +26,12 @@ final medicationServiceProvider = Provider<MedicationService>((ref) {
   return MedicationService(baseUrl: config.apiBaseUrl);
 });
 
+final dosesForDateProvider =
+    FutureProvider.family<List<Dose>, DateTime>((ref, date) async {
+  final service = ref.watch(medicationServiceProvider);
+  return service.getDosesForDate(date);
+});
+
 // Theme Provider
 final themeModeProvider = StateNotifierProvider<ThemeModeNotifier, ThemeMode>((ref) {
   return ThemeModeNotifier();
