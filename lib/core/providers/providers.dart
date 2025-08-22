@@ -2,12 +2,29 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../config/app_config.dart';
 import '../models/user.dart';
 import '../models/medication.dart';
 import '../models/chat_message.dart';
 import '../services/auth_service.dart';
 import '../services/medication_service.dart';
 import '../services/secure_storage.dart';
+
+// App Config Provider
+final appConfigProvider = Provider<AppConfig>((ref) {
+  return const AppConfig(apiBaseUrl: 'https://api.meditrack.com');
+});
+
+// Service Providers
+final authServiceProvider = Provider<AuthService>((ref) {
+  final config = ref.watch(appConfigProvider);
+  return AuthService(baseUrl: config.apiBaseUrl);
+});
+
+final medicationServiceProvider = Provider<MedicationService>((ref) {
+  final config = ref.watch(appConfigProvider);
+  return MedicationService(baseUrl: config.apiBaseUrl);
+});
 
 // Theme Provider
 final themeModeProvider = StateNotifierProvider<ThemeModeNotifier, ThemeMode>((ref) {
@@ -34,15 +51,16 @@ class ThemeModeNotifier extends StateNotifier<ThemeMode> {
 
 // Auth Provider
 final authProvider = StateNotifierProvider<AuthNotifier, AuthState>((ref) {
-  return AuthNotifier();
+  final authService = ref.watch(authServiceProvider);
+  return AuthNotifier(authService);
 });
 
 class AuthNotifier extends StateNotifier<AuthState> {
-  AuthNotifier() : super(const AuthState()) {
+  AuthNotifier(this._authService) : super(const AuthState()) {
     _checkAuthStatus();
   }
 
-  final _authService = AuthService();
+  final AuthService _authService;
   final _storage = SecureStorage();
 
   Future<void> _checkAuthStatus() async {
@@ -133,15 +151,16 @@ class AuthState {
 
 // Medication Provider
 final medicationProvider = StateNotifierProvider<MedicationNotifier, MedicationState>((ref) {
-  return MedicationNotifier();
+  final service = ref.watch(medicationServiceProvider);
+  return MedicationNotifier(service);
 });
 
 class MedicationNotifier extends StateNotifier<MedicationState> {
-  MedicationNotifier() : super(const MedicationState()) {
+  MedicationNotifier(this._medicationService) : super(const MedicationState()) {
     _loadMedications();
   }
 
-  final _medicationService = MedicationService();
+  final MedicationService _medicationService;
 
   Future<void> _loadMedications() async {
     state = state.copyWith(isLoading: true);

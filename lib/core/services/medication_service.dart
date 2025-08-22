@@ -3,7 +3,9 @@ import 'dart:convert';
 import '../models/medication.dart';
 
 class MedicationService {
-  static const String _baseUrl = 'https://api.meditrack.com'; // Replace with actual URL
+  final String baseUrl;
+
+  MedicationService({required this.baseUrl});
 
   Future<List<Medication>> getMedications() async {
     // Mock data for now

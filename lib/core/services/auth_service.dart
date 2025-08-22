@@ -3,12 +3,13 @@ import 'dart:convert';
 import '../models/user.dart';
 
 class AuthService {
-  static const String _baseUrl =
-      'https://api.meditrack.com'; // Replace with actual URL
+  final String baseUrl;
+
+  AuthService({required this.baseUrl});
 
   Future<AuthResult> login(String email, String password) async {
     final response = await http.post(
-      Uri.parse('$_baseUrl/auth/login'),
+      Uri.parse('$baseUrl/auth/login'),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({
         'email': email,
@@ -27,7 +28,7 @@ class AuthService {
 
   Future<AuthResult> signup(String email, String password, String name) async {
     final response = await http.post(
-      Uri.parse('$_baseUrl/auth/signup'),
+      Uri.parse('$baseUrl/auth/signup'),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({
         'email': email,
@@ -47,7 +48,7 @@ class AuthService {
 
   Future<void> forgotPassword(String email) async {
     final response = await http.post(
-      Uri.parse('$_baseUrl/auth/forgot-password'),
+      Uri.parse('$baseUrl/auth/forgot-password'),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({'email': email}),
     );
@@ -71,7 +72,7 @@ class AuthService {
 
   Future<String> refreshToken(String refreshToken) async {
     final response = await http.post(
-      Uri.parse('$_baseUrl/auth/refresh'),
+      Uri.parse('$baseUrl/auth/refresh'),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({'refreshToken': refreshToken}),
     );
