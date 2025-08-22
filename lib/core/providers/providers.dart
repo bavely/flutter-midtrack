@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../config/app_config.dart';
@@ -69,6 +72,24 @@ class AuthNotifier extends StateNotifier<AuthState> {
   final AuthService _authService;
   final _storage = SecureStorage();
 
+  String _parseError(Object error) {
+    debugPrint('Auth error: $error');
+    if (error is SocketException || error is http.ClientException) {
+      return 'Unable to connect. Please check your internet connection.';
+    }
+
+    final message = error.toString();
+    if (message.contains('Invalid credentials') ||
+        message.contains('Login failed')) {
+      return 'Invalid email or password.';
+    }
+    if (message.contains('User already exists') ||
+        message.contains('Email already in use')) {
+      return 'An account with this email already exists.';
+    }
+    return 'Something went wrong. Please try again.';
+  }
+
   Future<void> _checkAuthStatus() async {
     final token = await _storage.readToken();
     if (token != null) {
@@ -94,8 +115,10 @@ class AuthNotifier extends StateNotifier<AuthState> {
         isLoading: false,
       );
       return true;
-    } catch (e) {
-      state = state.copyWith(isLoading: false, error: e.toString());
+    } catch (e, st) {
+      debugPrint('Login failed: $e\n$st');
+      final message = _parseError(e);
+      state = state.copyWith(isLoading: false, error: message);
       return false;
     }
   }
@@ -111,8 +134,10 @@ class AuthNotifier extends StateNotifier<AuthState> {
         isLoading: false,
       );
       return true;
-    } catch (e) {
-      state = state.copyWith(isLoading: false, error: e.toString());
+    } catch (e, st) {
+      debugPrint('Signup failed: $e\n$st');
+      final message = _parseError(e);
+      state = state.copyWith(isLoading: false, error: message);
       return false;
     }
   }

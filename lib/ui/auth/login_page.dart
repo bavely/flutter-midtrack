@@ -45,6 +45,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     // Show error snackbar when there's an error
     ref.listen(authProvider, (prev, next) {
       if (next.error != null && mounted) {
+        debugPrint('Login error: ${next.error}');
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(next.error!),
