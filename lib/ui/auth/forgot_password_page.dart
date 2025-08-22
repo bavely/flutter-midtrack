@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../core/services/auth_service.dart';
+import '../../core/providers/providers.dart';
 import '../../core/theme/app_theme.dart';
 
 class ForgotPasswordPage extends ConsumerStatefulWidget {
@@ -31,7 +31,9 @@ class _ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
       });
 
       try {
-        await AuthService().forgotPassword(_emailController.text.trim());
+        await ref
+            .read(authServiceProvider)
+            .forgotPassword(_emailController.text.trim());
         setState(() {
           _emailSent = true;
           _isLoading = false;

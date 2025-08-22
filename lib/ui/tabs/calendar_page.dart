@@ -5,7 +5,6 @@ import 'package:intl/intl.dart';
 
 import '../../core/providers/providers.dart';
 import '../../core/models/medication.dart';
-import '../../core/services/medication_service.dart';
 import '../widgets/dose_card.dart';
 
 class CalendarPage extends ConsumerStatefulWidget {
@@ -33,7 +32,9 @@ class _CalendarPageState extends ConsumerState<CalendarPage> {
     });
 
     try {
-      final doses = await MedicationService().getDosesForDate(day);
+      final doses = await ref
+          .read(medicationServiceProvider)
+          .getDosesForDate(day);
       setState(() {
         _selectedDayDoses = doses;
         _isLoadingDoses = false;
