@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:go_router/go_router.dart';
+import 'package:image_picker/image_picker.dart';
 
 import '../../core/theme/app_theme.dart';
 import '../widgets/cylindrical_overlay.dart';
@@ -34,15 +35,49 @@ class _ScanPageState extends State<ScanPage> {
           ResolutionPreset.high,
           enableAudio: false,
         );
-        
+
         await _controller!.initialize();
-        
+
         setState(() {
           _isInitialized = true;
         });
+      } else {
+        debugPrint('No cameras available');
+        if (mounted) {
+          await showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: const Text('Camera Unavailable'),
+              content: const Text('No cameras available on this device.'),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: const Text('OK'),
+                ),
+              ],
+            ),
+          );
+        }
       }
     } catch (e) {
-      // Handle camera initialization error
+      debugPrint('Error initializing camera: $e');
+      if (mounted) {
+        await showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text('Camera Error'),
+            content: const Text(
+              'Failed to initialize the camera. Please try again.',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text('OK'),
+              ),
+            ],
+          ),
+        );
+      }
     }
   }
 
@@ -406,10 +441,16 @@ class _ScanPageState extends State<ScanPage> {
     }
   }
 
-  void _selectFromGallery() {
-    // Implement gallery selection
-    Navigator.pop(context);
-    context.push('/medication/manual'); // For now, redirect to manual entry
+  Future<void> _selectFromGallery() async {
+    final picker = ImagePicker();
+    try {
+      final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+      if (pickedFile != null) {
+        _processImage(pickedFile.path);
+      }
+    } catch (e) {
+      debugPrint('Error selecting image from gallery: $e');
+    }
   }
 
   void _processVideo(String videoPath) {
