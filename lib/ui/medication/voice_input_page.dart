@@ -47,15 +47,15 @@ class _VoiceInputPageState extends ConsumerState<VoiceInputPage>
 
   void _initSpeech() async {
     await _speechToText.initialize();
-    _hasPermission = await _speechToText.hasPermission();
+    _hasPermission = await _speechToText.hasPermission;
     setState(() {});
   }
 
   void _startListening() async {
-    _hasPermission = await _speechToText.hasPermission();
+    _hasPermission = await _speechToText.hasPermission;
     if (!_hasPermission) {
       final available = await _speechToText.initialize();
-      _hasPermission = await _speechToText.hasPermission();
+      _hasPermission = await _speechToText.hasPermission;
       setState(() {});
       if (!_hasPermission) {
         ScaffoldMessenger.of(context).showSnackBar(
