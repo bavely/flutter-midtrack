@@ -183,6 +183,11 @@ class MedicationNotifier extends StateNotifier<MedicationState> {
     }
   }
 
+  /// Public method to refresh medications and upcoming doses
+  Future<void> reload() async {
+    await _loadMedications();
+  }
+
   Future<bool> addMedication(Medication medication) async {
     try {
       final newMedication = await _medicationService.addMedication(medication);
@@ -199,7 +204,7 @@ class MedicationNotifier extends StateNotifier<MedicationState> {
   Future<void> markDoseTaken(String doseId) async {
     try {
       await _medicationService.markDoseTaken(doseId);
-      await _loadMedications(); // Refresh data
+      await reload(); // Refresh data
     } catch (e) {
       state = state.copyWith(error: e.toString());
     }
@@ -208,7 +213,7 @@ class MedicationNotifier extends StateNotifier<MedicationState> {
   Future<void> markDoseSkipped(String doseId) async {
     try {
       await _medicationService.markDoseSkipped(doseId);
-      await _loadMedications(); // Refresh data
+      await reload(); // Refresh data
     } catch (e) {
       state = state.copyWith(error: e.toString());
     }
