@@ -15,8 +15,6 @@ class VoiceInputPage extends ConsumerStatefulWidget {
 class _VoiceInputPageState extends ConsumerState<VoiceInputPage>
     with TickerProviderStateMixin {
   final SpeechToText _speechToText = SpeechToText();
-  bool _speechEnabled = false;
-  bool _speechAvailable = false;
   String _wordsSpoken = "";
   double _confidenceLevel = 0;
 
@@ -47,13 +45,35 @@ class _VoiceInputPageState extends ConsumerState<VoiceInputPage>
   }
 
   void _initSpeech() async {
-    _speechEnabled = await _speechToText.initialize();
-    setState(() {
-      _speechAvailable = _speechEnabled;
-    });
+    await _speechToText.initialize();
+    setState(() {});
   }
 
   void _startListening() async {
+    if (!_speechToText.hasPermission) {
+      final available = await _speechToText.initialize();
+      setState(() {});
+      if (!_speechToText.hasPermission) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Microphone permission denied')),
+        );
+        return;
+      }
+      if (!available) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Speech services unavailable')),
+        );
+        return;
+      }
+    }
+
+    if (!_speechToText.isAvailable) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Speech services unavailable')),
+      );
+      return;
+    }
+
     await _speechToText.listen(onResult: _onSpeechResult);
     setState(() {
       _confidenceLevel = 0;
@@ -149,9 +169,11 @@ class _VoiceInputPageState extends ConsumerState<VoiceInputPage>
                     Text(
                       _speechToText.isListening
                           ? 'Listening...'
-                          : _speechAvailable
-                              ? 'Tap the microphone to start'
-                              : 'Speech not available',
+                          : !_speechToText.hasPermission
+                              ? 'Microphone permission denied'
+                              : _speechToText.isAvailable
+                                  ? 'Tap the microphone to start'
+                                  : 'Speech not available',
                       style: Theme.of(context).textTheme.titleMedium,
                       textAlign: TextAlign.center,
                     ),
