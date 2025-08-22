@@ -17,6 +17,7 @@ class _VoiceInputPageState extends ConsumerState<VoiceInputPage>
   final SpeechToText _speechToText = SpeechToText();
   String _wordsSpoken = "";
   double _confidenceLevel = 0;
+  bool _hasPermission = false;
 
   late AnimationController _pulseController;
   late AnimationController _waveController;
@@ -46,14 +47,17 @@ class _VoiceInputPageState extends ConsumerState<VoiceInputPage>
 
   void _initSpeech() async {
     await _speechToText.initialize();
+    _hasPermission = await _speechToText.hasPermission();
     setState(() {});
   }
 
   void _startListening() async {
-    if (!_speechToText.hasPermission) {
+    _hasPermission = await _speechToText.hasPermission();
+    if (!_hasPermission) {
       final available = await _speechToText.initialize();
+      _hasPermission = await _speechToText.hasPermission();
       setState(() {});
-      if (!_speechToText.hasPermission) {
+      if (!_hasPermission) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Microphone permission denied')),
         );
@@ -169,7 +173,7 @@ class _VoiceInputPageState extends ConsumerState<VoiceInputPage>
                     Text(
                       _speechToText.isListening
                           ? 'Listening...'
-                          : !_speechToText.hasPermission
+                          : !_hasPermission
                               ? 'Microphone permission denied'
                               : _speechToText.isAvailable
                                   ? 'Tap the microphone to start'
