@@ -1,5 +1,6 @@
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:uuid/uuid.dart';
 import '../models/medication.dart';
 
 class MedicationService {
@@ -112,10 +113,23 @@ class MedicationService {
   }
 
   Future<Medication> addMedication(Medication medication) async {
-    // Mock API call
-    await Future.delayed(const Duration(seconds: 1));
-    
-    return medication.copyWith();
+    try {
+      final response = await http.post(
+        Uri.parse('$baseUrl/medications'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(medication.toJson()),
+      );
+
+      if (response.statusCode == 201) {
+        final data = jsonDecode(response.body) as Map<String, dynamic>;
+        return medication.copyWith(id: data['id']?.toString());
+      }
+    } catch (_) {
+      // If the API call fails, fall back to generating a local ID
+    }
+
+    // Generate a UUID if the server doesn't provide one
+    return medication.copyWith(id: const Uuid().v4());
   }
 
   Future<void> markDoseTaken(String doseId) async {
