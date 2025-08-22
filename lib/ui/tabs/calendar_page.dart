@@ -32,9 +32,7 @@ class _CalendarPageState extends ConsumerState<CalendarPage> {
     });
 
     try {
-      final doses = await ref
-          .read(medicationServiceProvider)
-          .getDosesForDate(day);
+      final doses = await ref.read(dosesForDateProvider(day).future);
       setState(() {
         _selectedDayDoses = doses;
         _isLoadingDoses = false;
