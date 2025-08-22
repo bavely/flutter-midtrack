@@ -43,7 +43,7 @@ class HomePage extends ConsumerWidget {
       ),
       body: RefreshIndicator(
         onRefresh: () async {
-          // Refresh data
+          await ref.read(medicationProvider.notifier).reload();
         },
         child: medicationState.isLoading
             ? const Center(child: CircularProgressIndicator())
