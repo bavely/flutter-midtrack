@@ -25,7 +25,7 @@ plugins {
     id("dev.flutter.flutter-plugin-loader") version "1.0.0"
     // Not applied here; the :app module applies them
     id("com.android.application") version "8.7.0" apply(false)
-    id("org.jetbrains.kotlin.android") version "1.9.24" apply(false)
+    id("org.jetbrains.kotlin.android") version "2.1.0" apply(false)
 }
 
 dependencyResolutionManagement {
