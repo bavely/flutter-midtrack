@@ -77,13 +77,15 @@ class _AssistantPageState extends ConsumerState<AssistantPage> {
                             children: [
                               CircleAvatar(
                                 backgroundColor: Colors.blue,
-                                child: Icon(Icons.smart_toy, color: Colors.white),
+                                child:
+                                    Icon(Icons.smart_toy, color: Colors.white),
                               ),
                               SizedBox(width: 12),
                               SizedBox(
                                 width: 24,
                                 height: 24,
-                                child: CircularProgressIndicator(strokeWidth: 2),
+                                child:
+                                    CircularProgressIndicator(strokeWidth: 2),
                               ),
                             ],
                           ),
@@ -207,16 +209,23 @@ class _AssistantPageState extends ConsumerState<AssistantPage> {
                   padding: const EdgeInsets.only(bottom: 8),
                   child: GestureDetector(
                     onTap: () {
-                      _messageController.text = question.substring(2, question.length - 1);
+                      _messageController.text =
+                          question.substring(2, question.length - 1);
                     },
                     child: Container(
                       width: double.infinity,
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.5),
+                        color: Theme.of(context)
+                            .colorScheme
+                            .surfaceContainerHighest
+                            .withOpacity(0.5),
                         borderRadius: BorderRadius.circular(8),
                         border: Border.all(
-                          color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
+                          color: Theme.of(context)
+                              .colorScheme
+                              .outline
+                              .withOpacity(0.2),
                         ),
                       ),
                       child: Text(
@@ -237,7 +246,8 @@ class _AssistantPageState extends ConsumerState<AssistantPage> {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Clear Conversation'),
-        content: const Text('Are you sure you want to clear all messages? This action cannot be undone.'),
+        content: const Text(
+            'Are you sure you want to clear all messages? This action cannot be undone.'),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),

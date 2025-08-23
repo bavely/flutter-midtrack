@@ -15,7 +15,7 @@ import '../services/secure_storage.dart';
 
 // App Config Provider
 final appConfigProvider = Provider<AppConfig>((ref) {
-  return const AppConfig(apiBaseUrl: 'https://api.meditrack.com');
+  return const AppConfig(apiBaseUrl: 'http://192.168.50.5:8000/graphql');
 });
 
 // Service Providers
@@ -36,7 +36,8 @@ final dosesForDateProvider =
 });
 
 // Theme Provider
-final themeModeProvider = StateNotifierProvider<ThemeModeNotifier, ThemeMode>((ref) {
+final themeModeProvider =
+    StateNotifierProvider<ThemeModeNotifier, ThemeMode>((ref) {
   return ThemeModeNotifier();
 });
 
@@ -181,7 +182,8 @@ class AuthState {
 }
 
 // Medication Provider
-final medicationProvider = StateNotifierProvider<MedicationNotifier, MedicationState>((ref) {
+final medicationProvider =
+    StateNotifierProvider<MedicationNotifier, MedicationState>((ref) {
   final service = ref.watch(medicationServiceProvider);
   return MedicationNotifier(service);
 });
@@ -278,7 +280,8 @@ class MedicationState {
 }
 
 // Assistant Provider
-final assistantProvider = StateNotifierProvider<AssistantNotifier, AssistantState>((ref) {
+final assistantProvider =
+    StateNotifierProvider<AssistantNotifier, AssistantState>((ref) {
   return AssistantNotifier();
 });
 

@@ -14,14 +14,14 @@ class ManualEntryPage extends StatefulWidget {
 
 class _ManualEntryPageState extends State<ManualEntryPage> {
   final _formKey = GlobalKey<FormState>();
-  
+
   // Form controllers
   final _nameController = TextEditingController();
   final _brandNameController = TextEditingController();
   final _dosageController = TextEditingController();
   final _totalPillsController = TextEditingController();
   final _instructionsController = TextEditingController();
-  
+
   // Form values
   String _dosageUnit = 'mg';
   MedicationForm _form = MedicationForm.tablet;
@@ -92,9 +92,12 @@ class _ManualEntryPageState extends State<ManualEntryPage> {
                         height: 4,
                         margin: const EdgeInsets.symmetric(horizontal: 2),
                         decoration: BoxDecoration(
-                          color: index <= _currentPage 
-                              ? AppTheme.primaryColor 
-                              : Theme.of(context).colorScheme.outline.withOpacity(0.3),
+                          color: index <= _currentPage
+                              ? AppTheme.primaryColor
+                              : Theme.of(context)
+                                  .colorScheme
+                                  .outline
+                                  .withOpacity(0.3),
                           borderRadius: BorderRadius.circular(2),
                         ),
                       ),
@@ -102,18 +105,18 @@ class _ManualEntryPageState extends State<ManualEntryPage> {
                   }),
                 ),
               ),
-              
+
               const SizedBox(width: 16),
-              
+
               // Navigation Buttons
               if (_currentPage > 0)
                 TextButton(
                   onPressed: _previousPage,
                   child: const Text('Back'),
                 ),
-              
+
               const SizedBox(width: 8),
-              
+
               ElevatedButton(
                 onPressed: _currentPage == 2 ? _submitForm : _nextPage,
                 child: Text(_currentPage == 2 ? 'Add Medication' : 'Next'),
@@ -136,7 +139,7 @@ class _ManualEntryPageState extends State<ManualEntryPage> {
             style: Theme.of(context).textTheme.headlineSmall,
           ),
           const SizedBox(height: 24),
-          
+
           // Medication Name
           TextFormField(
             controller: _nameController,
@@ -154,9 +157,9 @@ class _ManualEntryPageState extends State<ManualEntryPage> {
               return null;
             },
           ),
-          
+
           const SizedBox(height: 16),
-          
+
           // Brand Name (Optional)
           TextFormField(
             controller: _brandNameController,
@@ -168,9 +171,9 @@ class _ManualEntryPageState extends State<ManualEntryPage> {
               prefixIcon: Icon(Icons.business),
             ),
           ),
-          
+
           const SizedBox(height: 16),
-          
+
           // Dosage Row
           Row(
             children: [
@@ -179,7 +182,8 @@ class _ManualEntryPageState extends State<ManualEntryPage> {
                 flex: 2,
                 child: TextFormField(
                   controller: _dosageController,
-                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                  keyboardType:
+                      const TextInputType.numberWithOptions(decimal: true),
                   textInputAction: TextInputAction.next,
                   decoration: const InputDecoration(
                     labelText: 'Dosage *',
@@ -196,13 +200,13 @@ class _ManualEntryPageState extends State<ManualEntryPage> {
                   },
                 ),
               ),
-              
+
               const SizedBox(width: 12),
-              
+
               // Dosage Unit
               Expanded(
                 child: DropdownButtonFormField<String>(
-                  value: _dosageUnit,
+                  initialValue: _dosageUnit,
                   decoration: const InputDecoration(
                     labelText: 'Unit',
                   ),
@@ -223,12 +227,12 @@ class _ManualEntryPageState extends State<ManualEntryPage> {
               ),
             ],
           ),
-          
+
           const SizedBox(height: 16),
-          
+
           // Medication Form
           DropdownButtonFormField<MedicationForm>(
-            value: _form,
+            initialValue: _form,
             decoration: const InputDecoration(
               labelText: 'Form',
               prefixIcon: Icon(Icons.category),
@@ -245,9 +249,9 @@ class _ManualEntryPageState extends State<ManualEntryPage> {
               });
             },
           ),
-          
+
           const SizedBox(height: 16),
-          
+
           // Total Pills (Optional)
           TextFormField(
             controller: _totalPillsController,
@@ -276,20 +280,24 @@ class _ManualEntryPageState extends State<ManualEntryPage> {
             style: Theme.of(context).textTheme.headlineSmall,
           ),
           const SizedBox(height: 24),
-          
+
           // Frequency
           DropdownButtonFormField<String>(
-            value: _frequency,
+            initialValue: _frequency,
             decoration: const InputDecoration(
               labelText: 'Frequency',
               prefixIcon: Icon(Icons.schedule),
             ),
             items: const [
               DropdownMenuItem(value: 'Once daily', child: Text('Once daily')),
-              DropdownMenuItem(value: 'Twice daily', child: Text('Twice daily')),
-              DropdownMenuItem(value: 'Three times daily', child: Text('Three times daily')),
-              DropdownMenuItem(value: 'Four times daily', child: Text('Four times daily')),
-              DropdownMenuItem(value: 'Every other day', child: Text('Every other day')),
+              DropdownMenuItem(
+                  value: 'Twice daily', child: Text('Twice daily')),
+              DropdownMenuItem(
+                  value: 'Three times daily', child: Text('Three times daily')),
+              DropdownMenuItem(
+                  value: 'Four times daily', child: Text('Four times daily')),
+              DropdownMenuItem(
+                  value: 'Every other day', child: Text('Every other day')),
               DropdownMenuItem(value: 'Weekly', child: Text('Weekly')),
               DropdownMenuItem(value: 'As needed', child: Text('As needed')),
             ],
@@ -300,16 +308,16 @@ class _ManualEntryPageState extends State<ManualEntryPage> {
               });
             },
           ),
-          
+
           const SizedBox(height: 24),
-          
+
           // Scheduled Times
           Text(
             'Times',
             style: Theme.of(context).textTheme.titleMedium,
           ),
           const SizedBox(height: 8),
-          
+
           ..._scheduledTimes.asMap().entries.map((entry) {
             final index = entry.key;
             final time = entry.value;
@@ -326,7 +334,7 @@ class _ManualEntryPageState extends State<ManualEntryPage> {
               ),
             );
           }),
-          
+
           if (_scheduledTimes.length < 4)
             OutlinedButton.icon(
               onPressed: _addTime,
@@ -349,21 +357,21 @@ class _ManualEntryPageState extends State<ManualEntryPage> {
             style: Theme.of(context).textTheme.headlineSmall,
           ),
           const SizedBox(height: 24),
-          
+
           // Expiry Date
           ListTile(
             contentPadding: EdgeInsets.zero,
             leading: const Icon(Icons.calendar_today),
             title: const Text('Expiry Date (Optional)'),
-            subtitle: Text(_expiryDate != null 
+            subtitle: Text(_expiryDate != null
                 ? '${_expiryDate!.day}/${_expiryDate!.month}/${_expiryDate!.year}'
                 : 'Not set'),
             trailing: const Icon(Icons.chevron_right),
             onTap: _selectExpiryDate,
           ),
-          
+
           const SizedBox(height: 16),
-          
+
           // Instructions
           TextFormField(
             controller: _instructionsController,
@@ -376,9 +384,9 @@ class _ManualEntryPageState extends State<ManualEntryPage> {
               alignLabelWithHint: true,
             ),
           ),
-          
+
           const SizedBox(height: 32),
-          
+
           // Summary Card
           Card(
             child: Padding(
@@ -389,18 +397,24 @@ class _ManualEntryPageState extends State<ManualEntryPage> {
                   Text(
                     'Summary',
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      color: AppTheme.primaryColor,
-                    ),
+                          color: AppTheme.primaryColor,
+                        ),
                   ),
                   const SizedBox(height: 12),
-                  _buildSummaryRow('Name', _nameController.text.isEmpty ? 'Not specified' : _nameController.text),
+                  _buildSummaryRow(
+                      'Name',
+                      _nameController.text.isEmpty
+                          ? 'Not specified'
+                          : _nameController.text),
                   if (_brandNameController.text.isNotEmpty)
                     _buildSummaryRow('Brand', _brandNameController.text),
-                  _buildSummaryRow('Dosage', '${_dosageController.text.isEmpty ? '0' : _dosageController.text} $_dosageUnit'),
+                  _buildSummaryRow('Dosage',
+                      '${_dosageController.text.isEmpty ? '0' : _dosageController.text} $_dosageUnit'),
                   _buildSummaryRow('Form', _formatFormName(_form)),
                   _buildSummaryRow('Frequency', _frequency),
                   if (_totalPillsController.text.isNotEmpty)
-                    _buildSummaryRow('Total', '${_totalPillsController.text} pills'),
+                    _buildSummaryRow(
+                        'Total', '${_totalPillsController.text} pills'),
                 ],
               ),
             ),
@@ -420,8 +434,8 @@ class _ManualEntryPageState extends State<ManualEntryPage> {
             child: Text(
               '$label:',
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                fontWeight: FontWeight.w500,
-              ),
+                    fontWeight: FontWeight.w500,
+                  ),
             ),
           ),
           Expanded(
@@ -508,7 +522,7 @@ class _ManualEntryPageState extends State<ManualEntryPage> {
     if (_currentPage == 0 && !_validateBasicInfo()) {
       return;
     }
-    
+
     _pageController.nextPage(
       duration: const Duration(milliseconds: 300),
       curve: Curves.easeInOut,
@@ -523,27 +537,36 @@ class _ManualEntryPageState extends State<ManualEntryPage> {
   }
 
   bool _validateBasicInfo() {
-    return _nameController.text.isNotEmpty && 
-           _dosageController.text.isNotEmpty &&
-           double.tryParse(_dosageController.text) != null;
+    return _nameController.text.isNotEmpty &&
+        _dosageController.text.isNotEmpty &&
+        double.tryParse(_dosageController.text) != null;
   }
 
   void _submitForm() {
     if (_formKey.currentState!.validate() && _validateBasicInfo()) {
       final medicationData = {
         'name': _nameController.text,
-        'brandName': _brandNameController.text.isEmpty ? null : _brandNameController.text,
+        'brandName': _brandNameController.text.isEmpty
+            ? null
+            : _brandNameController.text,
         'dosage': double.parse(_dosageController.text),
         'unit': _dosageUnit,
         'form': _form.name,
         'frequency': _frequency,
-        'scheduledTimes': _scheduledTimes.map((t) => '${t.hour.toString().padLeft(2, '0')}:${t.minute.toString().padLeft(2, '0')}').toList(),
-        'totalPills': _totalPillsController.text.isEmpty ? null : int.tryParse(_totalPillsController.text),
+        'scheduledTimes': _scheduledTimes
+            .map((t) =>
+                '${t.hour.toString().padLeft(2, '0')}:${t.minute.toString().padLeft(2, '0')}')
+            .toList(),
+        'totalPills': _totalPillsController.text.isEmpty
+            ? null
+            : int.tryParse(_totalPillsController.text),
         'expiryDate': _expiryDate,
-        'instructions': _instructionsController.text.isEmpty ? null : _instructionsController.text,
+        'instructions': _instructionsController.text.isEmpty
+            ? null
+            : _instructionsController.text,
         'manualEntry': true,
       };
-      
+
       context.go('/medication/confirm', extra: medicationData);
     }
   }

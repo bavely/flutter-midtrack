@@ -12,7 +12,7 @@ class ChatMessageWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisAlignment: 
+      mainAxisAlignment:
           message.isFromUser ? MainAxisAlignment.end : MainAxisAlignment.start,
       children: [
         if (!message.isFromUser) ...[
@@ -28,7 +28,7 @@ class ChatMessageWidget extends StatelessWidget {
           ),
           const SizedBox(width: 8),
         ],
-        
+
         // Message Bubble
         Flexible(
           child: Container(
@@ -39,9 +39,9 @@ class ChatMessageWidget extends StatelessWidget {
             decoration: BoxDecoration(
               color: message.isFromUser
                   ? AppTheme.primaryColor
-                  : Theme.of(context).colorScheme.surfaceVariant,
+                  : Theme.of(context).colorScheme.surfaceContainerHighest,
               borderRadius: BorderRadius.circular(18).copyWith(
-                bottomRight: message.isFromUser 
+                bottomRight: message.isFromUser
                     ? const Radius.circular(4)
                     : const Radius.circular(18),
                 bottomLeft: message.isFromUser
@@ -55,10 +55,10 @@ class ChatMessageWidget extends StatelessWidget {
                 Text(
                   message.content,
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: message.isFromUser
-                        ? Colors.white
-                        : Theme.of(context).colorScheme.onSurfaceVariant,
-                  ),
+                        color: message.isFromUser
+                            ? Colors.white
+                            : Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
                 ),
                 const SizedBox(height: 4),
                 Align(
@@ -66,18 +66,18 @@ class ChatMessageWidget extends StatelessWidget {
                   child: Text(
                     message.timeDisplay,
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: message.isFromUser
-                          ? Colors.white.withOpacity(0.7)
-                          : Theme.of(context).colorScheme.outline,
-                      fontSize: 10,
-                    ),
+                          color: message.isFromUser
+                              ? Colors.white.withOpacity(0.7)
+                              : Theme.of(context).colorScheme.outline,
+                          fontSize: 10,
+                        ),
                   ),
                 ),
               ],
             ),
           ),
         ),
-        
+
         if (message.isFromUser) ...[
           const SizedBox(width: 8),
           // User Avatar

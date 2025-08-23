@@ -17,17 +17,17 @@ class ConfirmPage extends ConsumerStatefulWidget {
 
 class _ConfirmPageState extends ConsumerState<ConfirmPage> {
   final _formKey = GlobalKey<FormState>();
-  
+
   // Editable fields
   late TextEditingController _nameController;
   late TextEditingController _brandNameController;
   late TextEditingController _dosageController;
   late TextEditingController _instructionsController;
-  
+
   late String _dosageUnit;
   late String _form;
   late String _frequency;
-  
+
   bool _isLoading = false;
 
   @override
@@ -38,12 +38,14 @@ class _ConfirmPageState extends ConsumerState<ConfirmPage> {
 
   void _initializeControllers() {
     final data = widget.medicationData ?? {};
-    
+
     _nameController = TextEditingController(text: data['name'] ?? '');
     _brandNameController = TextEditingController(text: data['brandName'] ?? '');
-    _dosageController = TextEditingController(text: data['dosage']?.toString() ?? '');
-    _instructionsController = TextEditingController(text: data['instructions'] ?? '');
-    
+    _dosageController =
+        TextEditingController(text: data['dosage']?.toString() ?? '');
+    _instructionsController =
+        TextEditingController(text: data['instructions'] ?? '');
+
     _dosageUnit = data['unit'] ?? 'mg';
     _form = data['form'] ?? 'tablet';
     _frequency = data['frequency'] ?? 'Once daily';
@@ -96,14 +98,21 @@ class _ConfirmPageState extends ConsumerState<ConfirmPage> {
                         children: [
                           Icon(
                             isScanned ? Icons.camera_alt : Icons.mic,
-                            color: Theme.of(context).colorScheme.onPrimaryContainer,
+                            color: Theme.of(context)
+                                .colorScheme
+                                .onPrimaryContainer,
                           ),
                           const SizedBox(width: 8),
                           Text(
                             isScanned ? 'Scanned Information' : 'Voice Input',
-                            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                              color: Theme.of(context).colorScheme.onPrimaryContainer,
-                            ),
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleMedium
+                                ?.copyWith(
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .onPrimaryContainer,
+                                ),
                           ),
                         ],
                       ),
@@ -112,18 +121,25 @@ class _ConfirmPageState extends ConsumerState<ConfirmPage> {
                         Row(
                           children: [
                             Icon(
-                              confidence >= 0.8 ? Icons.check_circle : Icons.warning,
+                              confidence >= 0.8
+                                  ? Icons.check_circle
+                                  : Icons.warning,
                               size: 16,
-                              color: confidence >= 0.8 
-                                  ? AppTheme.successColor 
+                              color: confidence >= 0.8
+                                  ? AppTheme.successColor
                                   : AppTheme.warningColor,
                             ),
                             const SizedBox(width: 4),
                             Text(
                               'Confidence: ${(confidence * 100).round()}%',
-                              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                color: Theme.of(context).colorScheme.onPrimaryContainer,
-                              ),
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodySmall
+                                  ?.copyWith(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onPrimaryContainer,
+                                  ),
                             ),
                           ],
                         ),
@@ -132,10 +148,13 @@ class _ConfirmPageState extends ConsumerState<ConfirmPage> {
                         const SizedBox(height: 8),
                         Text(
                           'You said: "${data['voiceInput']}"',
-                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: Theme.of(context).colorScheme.onPrimaryContainer,
-                            fontStyle: FontStyle.italic,
-                          ),
+                          style:
+                              Theme.of(context).textTheme.bodySmall?.copyWith(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onPrimaryContainer,
+                                    fontStyle: FontStyle.italic,
+                                  ),
                         ),
                       ],
                     ],
@@ -188,7 +207,8 @@ class _ConfirmPageState extends ConsumerState<ConfirmPage> {
                     flex: 2,
                     child: TextFormField(
                       controller: _dosageController,
-                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                      keyboardType:
+                          const TextInputType.numberWithOptions(decimal: true),
                       decoration: const InputDecoration(
                         labelText: 'Dosage *',
                       ),
@@ -206,7 +226,7 @@ class _ConfirmPageState extends ConsumerState<ConfirmPage> {
                   const SizedBox(width: 12),
                   Expanded(
                     child: DropdownButtonFormField<String>(
-                      value: _dosageUnit,
+                      initialValue: _dosageUnit,
                       decoration: const InputDecoration(
                         labelText: 'Unit',
                       ),
@@ -231,7 +251,7 @@ class _ConfirmPageState extends ConsumerState<ConfirmPage> {
 
               // Form
               DropdownButtonFormField<String>(
-                value: _form,
+                initialValue: _form,
                 decoration: const InputDecoration(
                   labelText: 'Form',
                   prefixIcon: Icon(Icons.category),
@@ -240,7 +260,8 @@ class _ConfirmPageState extends ConsumerState<ConfirmPage> {
                   DropdownMenuItem(value: 'tablet', child: Text('Tablet')),
                   DropdownMenuItem(value: 'capsule', child: Text('Capsule')),
                   DropdownMenuItem(value: 'liquid', child: Text('Liquid')),
-                  DropdownMenuItem(value: 'injection', child: Text('Injection')),
+                  DropdownMenuItem(
+                      value: 'injection', child: Text('Injection')),
                   DropdownMenuItem(value: 'cream', child: Text('Cream')),
                   DropdownMenuItem(value: 'patch', child: Text('Patch')),
                   DropdownMenuItem(value: 'inhaler', child: Text('Inhaler')),
@@ -258,16 +279,21 @@ class _ConfirmPageState extends ConsumerState<ConfirmPage> {
 
               // Frequency
               DropdownButtonFormField<String>(
-                value: _frequency,
+                initialValue: _frequency,
                 decoration: const InputDecoration(
                   labelText: 'Frequency',
                   prefixIcon: Icon(Icons.schedule),
                 ),
                 items: const [
-                  DropdownMenuItem(value: 'Once daily', child: Text('Once daily')),
-                  DropdownMenuItem(value: 'Twice daily', child: Text('Twice daily')),
-                  DropdownMenuItem(value: 'Three times daily', child: Text('Three times daily')),
-                  DropdownMenuItem(value: 'As needed', child: Text('As needed')),
+                  DropdownMenuItem(
+                      value: 'Once daily', child: Text('Once daily')),
+                  DropdownMenuItem(
+                      value: 'Twice daily', child: Text('Twice daily')),
+                  DropdownMenuItem(
+                      value: 'Three times daily',
+                      child: Text('Three times daily')),
+                  DropdownMenuItem(
+                      value: 'As needed', child: Text('As needed')),
                 ],
                 onChanged: (value) {
                   setState(() {
@@ -341,8 +367,8 @@ class _ConfirmPageState extends ConsumerState<ConfirmPage> {
       final medication = Medication(
         id: DateTime.now().millisecondsSinceEpoch.toString(),
         name: _nameController.text.trim(),
-        brandName: _brandNameController.text.trim().isEmpty 
-            ? null 
+        brandName: _brandNameController.text.trim().isEmpty
+            ? null
             : _brandNameController.text.trim(),
         dosage: double.parse(_dosageController.text),
         dosageUnit: _dosageUnit,
@@ -352,15 +378,16 @@ class _ConfirmPageState extends ConsumerState<ConfirmPage> {
         ),
         frequency: _frequency,
         scheduledTimes: _getDefaultScheduledTimes(),
-        instructions: _instructionsController.text.trim().isEmpty 
-            ? null 
+        instructions: _instructionsController.text.trim().isEmpty
+            ? null
             : _instructionsController.text.trim(),
         createdAt: DateTime.now(),
         updatedAt: DateTime.now(),
       );
 
       // Add medication via provider
-      final success = await ref.read(medicationProvider.notifier).addMedication(medication);
+      final success =
+          await ref.read(medicationProvider.notifier).addMedication(medication);
 
       if (success && mounted) {
         // Show success message

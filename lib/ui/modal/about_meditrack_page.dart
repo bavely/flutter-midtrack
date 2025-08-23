@@ -35,30 +35,33 @@ class AboutMediTrackPage extends StatelessWidget {
                 size: 40,
               ),
             ),
-            
+
             const SizedBox(height: 16),
-            
+
             Text(
               'MediTrack',
               style: Theme.of(context).textTheme.headlineLarge,
             ),
-            
+
             const SizedBox(height: 8),
-            
+
             Text(
               'Your medication companion',
               style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                color: Theme.of(context).colorScheme.outline,
-              ),
+                    color: Theme.of(context).colorScheme.outline,
+                  ),
             ),
-            
+
             const SizedBox(height: 32),
-            
+
             // Version Info
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.5),
+                color: Theme.of(context)
+                    .colorScheme
+                    .surfaceContainerHighest
+                    .withOpacity(0.5),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Row(
@@ -71,24 +74,24 @@ class AboutMediTrackPage extends StatelessWidget {
                   Text(
                     '1.0.0',
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      fontWeight: FontWeight.w600,
-                    ),
+                          fontWeight: FontWeight.w600,
+                        ),
                   ),
                 ],
               ),
             ),
-            
+
             const SizedBox(height: 32),
-            
+
             // Description
             Text(
               'MediTrack helps you manage your medications with advanced features like:',
               style: Theme.of(context).textTheme.bodyLarge,
               textAlign: TextAlign.center,
             ),
-            
+
             const SizedBox(height: 24),
-            
+
             // Features List
             Column(
               children: [
@@ -130,9 +133,9 @@ class AboutMediTrackPage extends StatelessWidget {
                 ),
               ],
             ),
-            
+
             const SizedBox(height: 32),
-            
+
             // Support Section
             Container(
               width: double.infinity,
@@ -152,15 +155,17 @@ class AboutMediTrackPage extends StatelessWidget {
                   Text(
                     'Need Help?',
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      color: Theme.of(context).colorScheme.onPrimaryContainer,
-                    ),
+                          color:
+                              Theme.of(context).colorScheme.onPrimaryContainer,
+                        ),
                   ),
                   const SizedBox(height: 8),
                   Text(
                     'Contact our support team for assistance with MediTrack',
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Theme.of(context).colorScheme.onPrimaryContainer,
-                    ),
+                          color:
+                              Theme.of(context).colorScheme.onPrimaryContainer,
+                        ),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 16),
@@ -173,9 +178,9 @@ class AboutMediTrackPage extends StatelessWidget {
                 ],
               ),
             ),
-            
+
             const SizedBox(height: 32),
-            
+
             // Legal Links
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -198,15 +203,15 @@ class AboutMediTrackPage extends StatelessWidget {
                 ),
               ],
             ),
-            
+
             const SizedBox(height: 16),
-            
+
             // Copyright
             Text(
               '© 2024 MediTrack. All rights reserved.',
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: Theme.of(context).colorScheme.outline,
-              ),
+                    color: Theme.of(context).colorScheme.outline,
+                  ),
               textAlign: TextAlign.center,
             ),
           ],
@@ -215,7 +220,8 @@ class AboutMediTrackPage extends StatelessWidget {
     );
   }
 
-  Widget _buildFeatureItem(BuildContext context, IconData icon, String title, String description) {
+  Widget _buildFeatureItem(
+      BuildContext context, IconData icon, String title, String description) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 12),
       child: Row(
@@ -234,9 +240,7 @@ class AboutMediTrackPage extends StatelessWidget {
               size: 20,
             ),
           ),
-          
           const SizedBox(width: 16),
-          
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -249,8 +253,8 @@ class AboutMediTrackPage extends StatelessWidget {
                 Text(
                   description,
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Theme.of(context).colorScheme.outline,
-                  ),
+                        color: Theme.of(context).colorScheme.outline,
+                      ),
                 ),
               ],
             ),

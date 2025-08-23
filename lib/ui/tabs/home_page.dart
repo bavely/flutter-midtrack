@@ -55,7 +55,7 @@ class HomePage extends ConsumerWidget {
                     // Adherence Summary
                     _buildAdherenceCard(context, medicationState),
                     const SizedBox(height: 24),
-                    
+
                     // Upcoming Doses
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -72,9 +72,9 @@ class HomePage extends ConsumerWidget {
                     ),
                     const SizedBox(height: 8),
                     _buildUpcomingDoses(context, medicationState.upcomingDoses),
-                    
+
                     const SizedBox(height: 24),
-                    
+
                     // Medications List
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -105,7 +105,8 @@ class HomePage extends ConsumerWidget {
 
   Widget _buildAdherenceCard(BuildContext context, MedicationState state) {
     final adherencePercentage = 0.85; // Mock adherence data
-    final todayTaken = state.upcomingDoses.where((d) => d.status == DoseStatus.taken).length;
+    final todayTaken =
+        state.upcomingDoses.where((d) => d.status == DoseStatus.taken).length;
     final todayTotal = state.upcomingDoses.length;
 
     return Card(
@@ -131,11 +132,12 @@ class HomePage extends ConsumerWidget {
                       const SizedBox(height: 16),
                       Text(
                         '${(adherencePercentage * 100).round()}%',
-                        style: Theme.of(context).textTheme.headlineLarge?.copyWith(
-                          color: adherencePercentage >= 0.8 
-                              ? AppTheme.successColor 
-                              : AppTheme.warningColor,
-                        ),
+                        style:
+                            Theme.of(context).textTheme.headlineLarge?.copyWith(
+                                  color: adherencePercentage >= 0.8
+                                      ? AppTheme.successColor
+                                      : AppTheme.warningColor,
+                                ),
                       ),
                       Text(
                         'Adherence Rate',
@@ -149,8 +151,8 @@ class HomePage extends ConsumerWidget {
                   height: 80,
                   child: ProgressCircle(
                     progress: adherencePercentage,
-                    color: adherencePercentage >= 0.8 
-                        ? AppTheme.successColor 
+                    color: adherencePercentage >= 0.8
+                        ? AppTheme.successColor
                         : AppTheme.warningColor,
                   ),
                 ),
@@ -160,14 +162,21 @@ class HomePage extends ConsumerWidget {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.3),
+                color: Theme.of(context)
+                    .colorScheme
+                    .surfaceContainerHighest
+                    .withOpacity(0.3),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Row(
                 children: [
                   Icon(
-                    todayTaken == todayTotal ? Icons.check_circle : Icons.schedule,
-                    color: todayTaken == todayTotal ? AppTheme.successColor : AppTheme.accentColor,
+                    todayTaken == todayTotal
+                        ? Icons.check_circle
+                        : Icons.schedule,
+                    color: todayTaken == todayTotal
+                        ? AppTheme.successColor
+                        : AppTheme.accentColor,
                     size: 20,
                   ),
                   const SizedBox(width: 8),
@@ -212,14 +221,17 @@ class HomePage extends ConsumerWidget {
     }
 
     return Column(
-      children: doses.map((dose) => Padding(
-        padding: const EdgeInsets.only(bottom: 8),
-        child: DoseCard(dose: dose),
-      )).toList(),
+      children: doses
+          .map((dose) => Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: DoseCard(dose: dose),
+              ))
+          .toList(),
     );
   }
 
-  Widget _buildMedicationsList(BuildContext context, List<Medication> medications) {
+  Widget _buildMedicationsList(
+      BuildContext context, List<Medication> medications) {
     if (medications.isEmpty) {
       return Card(
         child: Padding(
@@ -253,13 +265,15 @@ class HomePage extends ConsumerWidget {
     }
 
     return Column(
-      children: medications.map((medication) => Padding(
-        padding: const EdgeInsets.only(bottom: 8),
-        child: MedicationCard(
-          medication: medication,
-          onTap: () => context.push('/medication/${medication.id}'),
-        ),
-      )).toList(),
+      children: medications
+          .map((medication) => Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: MedicationCard(
+                  medication: medication,
+                  onTap: () => context.push('/medication/${medication.id}'),
+                ),
+              ))
+          .toList(),
     );
   }
 }

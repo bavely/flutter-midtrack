@@ -26,7 +26,7 @@ class _VoiceInputPageState extends ConsumerState<VoiceInputPage>
   void initState() {
     super.initState();
     _initSpeech();
-    
+
     _pulseController = AnimationController(
       duration: const Duration(milliseconds: 800),
       vsync: this,
@@ -129,15 +129,17 @@ class _VoiceInputPageState extends ConsumerState<VoiceInputPage>
                   Text(
                     'Describe your medication',
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      color: Theme.of(context).colorScheme.onPrimaryContainer,
-                    ),
+                          color:
+                              Theme.of(context).colorScheme.onPrimaryContainer,
+                        ),
                   ),
                   const SizedBox(height: 8),
                   Text(
                     'Tell me the name, dosage, and how often you take it',
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Theme.of(context).colorScheme.onPrimaryContainer,
-                    ),
+                          color:
+                              Theme.of(context).colorScheme.onPrimaryContainer,
+                        ),
                     textAlign: TextAlign.center,
                   ),
                 ],
@@ -191,7 +193,9 @@ class _VoiceInputPageState extends ConsumerState<VoiceInputPage>
                         padding: const EdgeInsets.all(16),
                         margin: const EdgeInsets.symmetric(horizontal: 16),
                         decoration: BoxDecoration(
-                          color: Theme.of(context).colorScheme.surfaceVariant,
+                          color: Theme.of(context)
+                              .colorScheme
+                              .surfaceContainerHighest,
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Column(
@@ -227,20 +231,23 @@ class _VoiceInputPageState extends ConsumerState<VoiceInputPage>
                 children: [
                   // Microphone Button
                   GestureDetector(
-                    onTap: _speechToText.isNotListening ? _startListening : _stopListening,
+                    onTap: _speechToText.isNotListening
+                        ? _startListening
+                        : _stopListening,
                     child: Container(
                       width: 80,
                       height: 80,
                       decoration: BoxDecoration(
-                        color: _speechToText.isListening 
-                            ? AppTheme.errorColor 
+                        color: _speechToText.isListening
+                            ? AppTheme.errorColor
                             : AppTheme.primaryColor,
                         shape: BoxShape.circle,
                         boxShadow: [
                           BoxShadow(
-                            color: (_speechToText.isListening 
-                                ? AppTheme.errorColor 
-                                : AppTheme.primaryColor).withOpacity(0.3),
+                            color: (_speechToText.isListening
+                                    ? AppTheme.errorColor
+                                    : AppTheme.primaryColor)
+                                .withOpacity(0.3),
                             blurRadius: 20,
                             spreadRadius: _speechToText.isListening ? 10 : 0,
                           ),
@@ -316,7 +323,7 @@ class _VoiceInputPageState extends ConsumerState<VoiceInputPage>
     // Simulate processing delay
     Future.delayed(const Duration(seconds: 2), () {
       Navigator.of(context).pop(); // Close processing dialog
-      
+
       // Navigate to confirmation with parsed data
       context.go('/medication/confirm', extra: {
         'name': 'Aspirin', // Mock parsed data
@@ -363,7 +370,7 @@ class VoiceVisualizerPainter extends CustomPainter {
     for (int i = 1; i <= 3; i++) {
       final waveRadius = radius + (i * 30) + (animation.value * 20);
       final opacity = (1.0 - animation.value) * 0.7;
-      
+
       wavePaint.color = AppTheme.primaryColor.withOpacity(opacity);
       canvas.drawCircle(center, waveRadius, wavePaint);
     }
@@ -375,18 +382,20 @@ class VoiceVisualizerPainter extends CustomPainter {
   void _drawIdleState(Canvas canvas, Offset center, double radius) {
     // Draw pulsing microphone
     final pulseRadius = radius + (pulseAnimation.value * 10);
-    
+
     final pulsePaint = Paint()
-      ..color = AppTheme.primaryColor.withOpacity(0.3 + (pulseAnimation.value * 0.4))
+      ..color =
+          AppTheme.primaryColor.withOpacity(0.3 + (pulseAnimation.value * 0.4))
       ..style = PaintingStyle.fill;
 
     canvas.drawCircle(center, pulseRadius, pulsePaint);
-    
+
     // Draw center microphone
     _drawMicrophone(canvas, center, radius * 0.8, AppTheme.primaryColor);
   }
 
-  void _drawMicrophone(Canvas canvas, Offset center, double radius, Color color) {
+  void _drawMicrophone(
+      Canvas canvas, Offset center, double radius, Color color) {
     final micPaint = Paint()
       ..color = color
       ..style = PaintingStyle.fill;
@@ -425,7 +434,7 @@ class VoiceVisualizerPainter extends CustomPainter {
   @override
   bool shouldRepaint(VoiceVisualizerPainter oldDelegate) {
     return isListening != oldDelegate.isListening ||
-           animation != oldDelegate.animation ||
-           pulseAnimation != oldDelegate.pulseAnimation;
+        animation != oldDelegate.animation ||
+        pulseAnimation != oldDelegate.pulseAnimation;
   }
 }

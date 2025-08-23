@@ -24,7 +24,8 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
   }
 
   Future<void> _loadSettings() async {
-    final notificationsEnabled = await NotificationService().areNotificationsEnabled();
+    final notificationsEnabled =
+        await NotificationService().areNotificationsEnabled();
     setState(() {
       _notificationsEnabled = notificationsEnabled;
     });
@@ -61,14 +62,15 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                     backgroundColor: AppTheme.primaryColor,
                     child: Text(
                       user?.initials ?? 'U',
-                      style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                      ),
+                      style:
+                          Theme.of(context).textTheme.headlineSmall?.copyWith(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                              ),
                     ),
                   ),
                   const SizedBox(width: 16),
-                  
+
                   // User Info
                   Expanded(
                     child: Column(
@@ -95,25 +97,26 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
               ),
             ),
           ),
-          
+
           const SizedBox(height: 24),
-          
+
           // Notifications Section
           Text(
             'Notifications',
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
-              color: AppTheme.primaryColor,
-              fontWeight: FontWeight.w600,
-            ),
+                  color: AppTheme.primaryColor,
+                  fontWeight: FontWeight.w600,
+                ),
           ),
           const SizedBox(height: 8),
-          
+
           Card(
             child: Column(
               children: [
                 SwitchListTile(
                   title: const Text('Medication Reminders'),
-                  subtitle: const Text('Get notified when it\'s time to take medication'),
+                  subtitle: const Text(
+                      'Get notified when it\'s time to take medication'),
                   value: _notificationsEnabled,
                   onChanged: (value) async {
                     await NotificationService().setNotificationsEnabled(value);
@@ -126,7 +129,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                   const Divider(height: 1),
                   ListTile(
                     title: const Text('Default Reminder Time'),
-                    subtitle: Text('${_reminderTime.format(context)}'),
+                    subtitle: Text(_reminderTime.format(context)),
                     trailing: const Icon(Icons.chevron_right),
                     onTap: _showTimePicker,
                   ),
@@ -134,19 +137,19 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
               ],
             ),
           ),
-          
+
           const SizedBox(height: 24),
-          
+
           // Appearance Section
           Text(
             'Appearance',
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
-              color: AppTheme.primaryColor,
-              fontWeight: FontWeight.w600,
-            ),
+                  color: AppTheme.primaryColor,
+                  fontWeight: FontWeight.w600,
+                ),
           ),
           const SizedBox(height: 8),
-          
+
           Card(
             child: Column(
               children: [
@@ -159,19 +162,19 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
               ],
             ),
           ),
-          
+
           const SizedBox(height: 24),
-          
+
           // Account Section
           Text(
             'Account',
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
-              color: AppTheme.primaryColor,
-              fontWeight: FontWeight.w600,
-            ),
+                  color: AppTheme.primaryColor,
+                  fontWeight: FontWeight.w600,
+                ),
           ),
           const SizedBox(height: 8),
-          
+
           Card(
             child: Column(
               children: [
@@ -204,9 +207,9 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
               ],
             ),
           ),
-          
+
           const SizedBox(height: 32),
-          
+
           // Sign Out Button
           SizedBox(
             width: double.infinity,
@@ -221,9 +224,9 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
               ),
             ),
           ),
-          
+
           const SizedBox(height: 16),
-          
+
           // App Version
           Center(
             child: Text(
@@ -240,7 +243,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
     if (date == null) return 'Unknown';
     final now = DateTime.now();
     final difference = now.difference(date);
-    
+
     if (difference.inDays < 30) {
       return '${difference.inDays} days ago';
     } else if (difference.inDays < 365) {
@@ -302,7 +305,9 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                     groupValue: ref.read(themeModeProvider),
                     onChanged: (value) {
                       if (value != null) {
-                        ref.read(themeModeProvider.notifier).setThemeMode(value);
+                        ref
+                            .read(themeModeProvider.notifier)
+                            .setThemeMode(value);
                         Navigator.pop(context);
                       }
                     },

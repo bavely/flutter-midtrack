@@ -26,7 +26,7 @@ class AddMedicationPage extends StatelessWidget {
               style: Theme.of(context).textTheme.titleLarge,
             ),
             const SizedBox(height: 24),
-            
+
             // Scan Bottle Option
             _AddMedicationOption(
               icon: Icons.camera_alt,
@@ -36,9 +36,9 @@ class AddMedicationPage extends StatelessWidget {
               recommended: true,
               onTap: () => context.push('/medication/scan'),
             ),
-            
+
             const SizedBox(height: 12),
-            
+
             // Voice Input Option
             _AddMedicationOption(
               icon: Icons.mic,
@@ -47,9 +47,9 @@ class AddMedicationPage extends StatelessWidget {
               subtitle: 'Describe your medication using voice',
               onTap: () => context.push('/medication/voice'),
             ),
-            
+
             const SizedBox(height: 12),
-            
+
             // Manual Entry Option
             _AddMedicationOption(
               icon: Icons.edit,
@@ -58,14 +58,17 @@ class AddMedicationPage extends StatelessWidget {
               subtitle: 'Type in medication details manually',
               onTap: () => context.push('/medication/manual'),
             ),
-            
+
             const Spacer(),
-            
+
             // Help Text
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.5),
+                color: Theme.of(context)
+                    .colorScheme
+                    .surfaceContainerHighest
+                    .withOpacity(0.5),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Row(
@@ -133,9 +136,9 @@ class _AddMedicationOption extends StatelessWidget {
                   size: 24,
                 ),
               ),
-              
+
               const SizedBox(width: 16),
-              
+
               // Content
               Expanded(
                 child: Column(
@@ -160,11 +163,14 @@ class _AddMedicationOption extends StatelessWidget {
                             ),
                             child: Text(
                               'RECOMMENDED',
-                              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                color: Colors.white,
-                                fontWeight: FontWeight.w600,
-                                fontSize: 10,
-                              ),
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodySmall
+                                  ?.copyWith(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 10,
+                                  ),
                             ),
                           ),
                         ],
@@ -178,7 +184,7 @@ class _AddMedicationOption extends StatelessWidget {
                   ],
                 ),
               ),
-              
+
               // Arrow
               Icon(
                 Icons.chevron_right,
