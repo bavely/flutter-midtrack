@@ -16,10 +16,35 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  late final ProviderSubscription<AuthState> _authListener;
   bool _obscurePassword = true;
 
   @override
+  void initState() {
+    super.initState();
+    _authListener = ref.listenManual<AuthState>(
+      authProvider,
+      (prev, next) {
+        if (next.error != null && mounted) {
+          debugPrint('Login error: ${next.error}');
+          ScaffoldMessenger.of(context)
+            ..clearSnackBars()
+            ..showSnackBar(
+              SnackBar(
+                content: Text(next.error!),
+                backgroundColor: AppTheme.errorColor,
+                behavior: SnackBarBehavior.floating,
+              ),
+            );
+          ref.read(authProvider.notifier).clearError();
+        }
+      },
+    );
+  }
+
+  @override
   void dispose() {
+    _authListener.close();
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
@@ -41,21 +66,6 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   @override
   Widget build(BuildContext context) {
     final authState = ref.watch(authProvider);
-
-    // Show error snackbar when there's an error
-    ref.listen(authProvider, (prev, next) {
-      if (next.error != null && mounted) {
-        debugPrint('Login error: ${next.error}');
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(next.error!),
-            backgroundColor: AppTheme.errorColor,
-            behavior: SnackBarBehavior.floating,
-          ),
-        );
-        ref.read(authProvider.notifier).clearError();
-      }
-    });
 
     return Scaffold(
       body: SafeArea(
