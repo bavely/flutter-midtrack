@@ -1,169 +1,239 @@
-import 'package:http/http.dart' as http;
-import 'dart:convert';
-import 'package:uuid/uuid.dart';
+import 'package:graphql_flutter/graphql_flutter.dart';
+
 import '../models/medication.dart';
+import '../models/dashboard_data.dart';
+
+const String ADD_MEDICATION = r'''
+mutation AddMedication($input: MedicationInput!) {
+  addMedication(input: $input) {
+    medication {
+      id
+      name
+      brandName
+      dosage
+      dosageUnit
+      form
+      frequency
+      scheduledTimes
+      totalPills
+      remainingPills
+      expiryDate
+      instructions
+      createdAt
+      updatedAt
+    }
+    errors { field message }
+  }
+}
+''';
+
+const String GET_DASHBOARD = r'''
+query GetDashboard {
+  getDashboard {
+    medications {
+      id
+      name
+      brandName
+      dosage
+      dosageUnit
+      form
+      frequency
+      scheduledTimes
+      totalPills
+      remainingPills
+      expiryDate
+      instructions
+      createdAt
+      updatedAt
+    }
+    upcomingDoses {
+      id
+      medicationId
+      medicationName
+      scheduledTime
+      status
+      takenTime
+      dosage
+      dosageUnit
+    }
+    missedDoses {
+      id
+      medicationId
+      medicationName
+      scheduledTime
+      status
+      takenTime
+      dosage
+      dosageUnit
+    }
+    refillAlerts {
+      id
+      name
+      brandName
+      dosage
+      dosageUnit
+      form
+      frequency
+      scheduledTimes
+      totalPills
+      remainingPills
+      expiryDate
+      instructions
+      createdAt
+      updatedAt
+    }
+    errors { field message }
+  }
+}
+''';
+
+const String PARSE_MED_LABEL = r'''
+mutation ParseMedLabel($imageUrl: String!) {
+  parseMedLabel(imageUrl: $imageUrl) {
+    medication {
+      name
+      brandName
+      dosage
+      dosageUnit
+      form
+      frequency
+      scheduledTimes
+      totalPills
+      remainingPills
+      expiryDate
+      instructions
+    }
+    errors { field message }
+  }
+}
+''';
 
 class MedicationService {
-  final String baseUrl;
+  MedicationService({required GraphQLClient client}) : _client = client;
 
-  MedicationService({required this.baseUrl});
+  final GraphQLClient _client;
 
-  Future<List<Medication>> getMedications() async {
-    // Mock data for now
-    await Future.delayed(const Duration(milliseconds: 500));
-    
-    return [
-      Medication(
-        id: '1',
-        name: 'Lisinopril',
-        brandName: 'Prinivil',
-        dosage: 10,
-        dosageUnit: 'mg',
-        form: MedicationForm.tablet,
-        frequency: 'Once daily',
-        scheduledTimes: ['08:00'],
-        totalPills: 30,
-        remainingPills: 22,
-        expiryDate: DateTime.now().add(const Duration(days: 300)),
-        instructions: 'Take with water, preferably in the morning',
-        createdAt: DateTime.now().subtract(const Duration(days: 15)),
-        updatedAt: DateTime.now(),
-      ),
-      Medication(
-        id: '2',
-        name: 'Metformin',
-        dosage: 500,
-        dosageUnit: 'mg',
-        form: MedicationForm.tablet,
-        frequency: 'Twice daily',
-        scheduledTimes: ['08:00', '20:00'],
-        totalPills: 60,
-        remainingPills: 8,
-        expiryDate: DateTime.now().add(const Duration(days: 180)),
-        instructions: 'Take with meals to reduce stomach upset',
-        createdAt: DateTime.now().subtract(const Duration(days: 25)),
-        updatedAt: DateTime.now(),
-      ),
-    ];
-  }
+  Future<DashboardData> getDashboard() async {
+    final result = await _client.query(
+      QueryOptions(document: gql(GET_DASHBOARD)),
+    );
+    if (result.hasException) {
+      throw result.exception!;
+    }
+    final data = result.data?['getDashboard'] as Map<String, dynamic>?;
+    if (data == null) {
+      throw Exception('No dashboard data');
+    }
 
-  Future<List<Dose>> getUpcomingDoses() async {
-    // Mock data for now
-    await Future.delayed(const Duration(milliseconds: 300));
-    
-    final now = DateTime.now();
-    return [
-      Dose(
-        id: '1',
-        medicationId: '1',
-        medicationName: 'Lisinopril',
-        scheduledTime: DateTime(now.year, now.month, now.day, 8, 0),
-        status: DoseStatus.scheduled,
-        dosage: 10,
-        dosageUnit: 'mg',
-      ),
-      Dose(
-        id: '2',
-        medicationId: '2',
-        medicationName: 'Metformin',
-        scheduledTime: DateTime(now.year, now.month, now.day, 8, 0),
-        status: DoseStatus.taken,
-        takenTime: DateTime(now.year, now.month, now.day, 8, 15),
-        dosage: 500,
-        dosageUnit: 'mg',
-      ),
-      Dose(
-        id: '3',
-        medicationId: '2',
-        medicationName: 'Metformin',
-        scheduledTime: DateTime(now.year, now.month, now.day, 20, 0),
-        status: DoseStatus.scheduled,
-        dosage: 500,
-        dosageUnit: 'mg',
-      ),
-    ];
-  }
+    final errors = data['errors'] as List<dynamic>?;
+    if (errors != null && errors.isNotEmpty) {
+      final message = errors
+          .map((e) => '${e['field']}: ${e['message']}')
+          .join(', ');
+      throw Exception(message);
+    }
 
-  Future<List<Dose>> getDosesForDate(DateTime date) async {
-    // Mock data for specific date
-    await Future.delayed(const Duration(milliseconds: 300));
-    
-    return [
-      Dose(
-        id: '1',
-        medicationId: '1',
-        medicationName: 'Lisinopril',
-        scheduledTime: DateTime(date.year, date.month, date.day, 8, 0),
-        status: DoseStatus.taken,
-        takenTime: DateTime(date.year, date.month, date.day, 8, 10),
-        dosage: 10,
-        dosageUnit: 'mg',
-      ),
-      Dose(
-        id: '2',
-        medicationId: '2',
-        medicationName: 'Metformin',
-        scheduledTime: DateTime(date.year, date.month, date.day, 8, 0),
-        status: DoseStatus.taken,
-        takenTime: DateTime(date.year, date.month, date.day, 8, 15),
-        dosage: 500,
-        dosageUnit: 'mg',
-      ),
-    ];
+    final medications = (data['medications'] as List<dynamic>? ?? [])
+        .map((e) => Medication.fromJson(Map<String, dynamic>.from(e)))
+        .toList();
+    final upcomingDoses = (data['upcomingDoses'] as List<dynamic>? ?? [])
+        .map((e) => Dose.fromJson(Map<String, dynamic>.from(e)))
+        .toList();
+    final missedDoses = (data['missedDoses'] as List<dynamic>? ?? [])
+        .map((e) => Dose.fromJson(Map<String, dynamic>.from(e)))
+        .toList();
+    final refillAlerts = (data['refillAlerts'] as List<dynamic>? ?? [])
+        .map((e) => Medication.fromJson(Map<String, dynamic>.from(e)))
+        .toList();
+
+    return DashboardData(
+      medications: medications,
+      upcomingDoses: upcomingDoses,
+      missedDoses: missedDoses,
+      refillAlerts: refillAlerts,
+    );
   }
 
   Future<Medication> addMedication(Medication medication) async {
-    try {
-      final response = await http.post(
-        Uri.parse('$baseUrl/medications'),
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode(medication.toJson()),
-      );
-
-      if (response.statusCode == 201) {
-        final data = jsonDecode(response.body) as Map<String, dynamic>;
-        return medication.copyWith(id: data['id']?.toString());
-      }
-    } catch (_) {
-      // If the API call fails, fall back to generating a local ID
+    final result = await _client.mutate(
+      MutationOptions(
+        document: gql(ADD_MEDICATION),
+        variables: {
+          'input': medication.toJson()..remove('id'),
+        },
+      ),
+    );
+    if (result.hasException) {
+      throw result.exception!;
     }
+    final data = result.data?['addMedication'] as Map<String, dynamic>?;
+    if (data == null) {
+      throw Exception('No data');
+    }
+    final errors = data['errors'] as List<dynamic>?;
+    if (errors != null && errors.isNotEmpty) {
+      final message = errors
+          .map((e) => '${e['field']}: ${e['message']}')
+          .join(', ');
+      throw Exception(message);
+    }
+    final medData = data['medication'] as Map<String, dynamic>?;
+    if (medData == null) {
+      throw Exception('Medication not returned');
+    }
+    return Medication.fromJson(Map<String, dynamic>.from(medData));
+  }
 
-    // Generate a UUID if the server doesn't provide one
-    return medication.copyWith(id: const Uuid().v4());
+  Future<Map<String, dynamic>> parseLabel(String imagePath) async {
+    final imageUrl = await uploadImage(imagePath);
+    final result = await _client.mutate(
+      MutationOptions(
+        document: gql(PARSE_MED_LABEL),
+        variables: {'imageUrl': imageUrl},
+      ),
+    );
+    if (result.hasException) {
+      throw result.exception!;
+    }
+    final data = result.data?['parseMedLabel'] as Map<String, dynamic>?;
+    if (data == null) {
+      throw Exception('No data');
+    }
+    final errors = data['errors'] as List<dynamic>?;
+    if (errors != null && errors.isNotEmpty) {
+      final message = errors
+          .map((e) => '${e['field']}: ${e['message']}')
+          .join(', ');
+      throw Exception(message);
+    }
+    final medData = data['medication'] as Map<String, dynamic>? ?? {};
+    return Map<String, dynamic>.from(medData);
+  }
+
+  Future<List<Dose>> getDosesForDate(DateTime date) async {
+    final dashboard = await getDashboard();
+    final all = [...dashboard.upcomingDoses, ...dashboard.missedDoses];
+    return all
+        .where((d) =>
+            d.scheduledTime.year == date.year &&
+            d.scheduledTime.month == date.month &&
+            d.scheduledTime.day == date.day)
+        .toList();
   }
 
   Future<void> markDoseTaken(String doseId) async {
     await Future.delayed(const Duration(milliseconds: 500));
-    // API call to mark dose as taken
   }
 
   Future<void> markDoseSkipped(String doseId) async {
     await Future.delayed(const Duration(milliseconds: 500));
-    // API call to mark dose as skipped
   }
 
   Future<void> deleteMedication(String medicationId) async {
     await Future.delayed(const Duration(milliseconds: 500));
-    // API call to delete medication
-  }
-
-  Future<Map<String, dynamic>> parseLabel(String imagePath) async {
-    // Mock OCR results
-    await Future.delayed(const Duration(seconds: 2));
-    
-    return {
-      'name': 'Lisinopril',
-      'brandName': 'Prinivil',
-      'dosage': 10.0,
-      'dosageUnit': 'mg',
-      'form': 'tablet',
-      'instructions': 'Take once daily with water',
-      'confidence': 0.85,
-    };
   }
 
   Future<String> uploadImage(String imagePath) async {
-    // Mock image upload
     await Future.delayed(const Duration(seconds: 1));
     return 'https://example.com/medication-images/uploaded-image.jpg';
   }

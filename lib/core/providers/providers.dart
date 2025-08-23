@@ -34,8 +34,8 @@ final authServiceProvider = Provider<AuthService>((ref) {
 });
 
 final medicationServiceProvider = Provider<MedicationService>((ref) {
-  final config = ref.watch(appConfigProvider);
-  return MedicationService(baseUrl: config.apiBaseUrl);
+  final client = ref.watch(graphQLClientProvider);
+  return MedicationService(client: client);
 });
 
 final dosesForDateProvider =
@@ -214,11 +214,12 @@ class MedicationNotifier extends StateNotifier<MedicationState> {
   Future<void> _loadMedications() async {
     state = state.copyWith(isLoading: true);
     try {
-      final medications = await _medicationService.getMedications();
-      final upcomingDoses = await _medicationService.getUpcomingDoses();
+      final dashboard = await _medicationService.getDashboard();
       state = state.copyWith(
-        medications: medications,
-        upcomingDoses: upcomingDoses,
+        medications: dashboard.medications,
+        upcomingDoses: dashboard.upcomingDoses,
+        missedDoses: dashboard.missedDoses,
+        refillAlerts: dashboard.refillAlerts,
         isLoading: false,
       );
     } catch (e) {
@@ -233,10 +234,8 @@ class MedicationNotifier extends StateNotifier<MedicationState> {
 
   Future<bool> addMedication(Medication medication) async {
     try {
-      final newMedication = await _medicationService.addMedication(medication);
-      state = state.copyWith(
-        medications: [...state.medications, newMedication],
-      );
+      await _medicationService.addMedication(medication);
+      await _loadMedications();
       return true;
     } catch (e) {
       state = state.copyWith(error: e.toString());
@@ -270,12 +269,16 @@ class MedicationNotifier extends StateNotifier<MedicationState> {
 class MedicationState {
   final List<Medication> medications;
   final List<Dose> upcomingDoses;
+  final List<Dose> missedDoses;
+  final List<Medication> refillAlerts;
   final bool isLoading;
   final String? error;
 
   const MedicationState({
     this.medications = const [],
     this.upcomingDoses = const [],
+    this.missedDoses = const [],
+    this.refillAlerts = const [],
     this.isLoading = false,
     this.error,
   });
@@ -283,12 +286,16 @@ class MedicationState {
   MedicationState copyWith({
     List<Medication>? medications,
     List<Dose>? upcomingDoses,
+    List<Dose>? missedDoses,
+    List<Medication>? refillAlerts,
     bool? isLoading,
     String? error,
   }) {
     return MedicationState(
       medications: medications ?? this.medications,
       upcomingDoses: upcomingDoses ?? this.upcomingDoses,
+      missedDoses: missedDoses ?? this.missedDoses,
+      refillAlerts: refillAlerts ?? this.refillAlerts,
       isLoading: isLoading ?? this.isLoading,
       error: error ?? this.error,
     );
