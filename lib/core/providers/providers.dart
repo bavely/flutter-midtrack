@@ -15,7 +15,7 @@ import '../services/secure_storage.dart';
 
 // App Config Provider
 final appConfigProvider = Provider<AppConfig>((ref) {
-  return const AppConfig(apiBaseUrl: 'http://192.168.50.5:8000/graphql');
+  return AppConfig();
 });
 
 // Service Providers
