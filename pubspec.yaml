@@ -17,7 +17,7 @@ dependencies:
   flutter_riverpod: ^2.4.9
   riverpod_annotation: ^2.3.3
   
-  # GraphQL
+  # GraphQL Client
   graphql_flutter: ^5.1.2
   
   # Secure Storage

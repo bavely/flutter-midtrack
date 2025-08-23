@@ -1,87 +1,153 @@
-import 'package:http/http.dart' as http;
-import 'dart:convert';
+import 'package:graphql_flutter/graphql_flutter.dart';
+
 import '../models/user.dart';
 
-class AuthService {
-  final String baseUrl;
+/// GraphQL operations for authentication.
+const String _loginUserMutation = r'''
+mutation LoginUser($email: String!, $password: String!) {
+  loginUser(email: $email, password: $password) {
+    token
+    user {
+      id
+      email
+      name
+      profileImageUrl
+      createdAt
+    }
+  }
+}
+''';
 
-  AuthService({required this.baseUrl});
+const String _registerUserMutation = r'''
+mutation RegisterUser($email: String!, $password: String!, $name: String!) {
+  registerUser(email: $email, password: $password, name: $name) {
+    token
+    user {
+      id
+      email
+      name
+      profileImageUrl
+      createdAt
+    }
+  }
+}
+''';
+
+const String _refreshTokenMutation = r'''
+mutation RefreshToken($refreshToken: String!) {
+  refreshToken(refreshToken: $refreshToken) {
+    token
+  }
+}
+''';
+
+const String _resetPasswordMutation = r'''
+mutation ForgotPassword($email: String!) {
+  forgotPassword(email: $email) {
+    success
+  }
+}
+''';
+
+const String _getViewerQuery = r'''
+query GetUser {
+  getUser {
+    id
+    email
+    name
+    profileImageUrl
+    createdAt
+  }
+}
+''';
+
+class AuthService {
+  AuthService({required GraphQLClient client}) : _client = client;
+
+  final GraphQLClient _client;
 
   Future<AuthResult> login(String email, String password) async {
-    final response = await http.post(
-      Uri.parse(baseUrl),
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({
-        'email': email,
-        'password': password,
-      }),
+    final result = await _client.mutate(
+      MutationOptions(
+        document: gql(_loginUserMutation),
+        variables: {
+          'email': email,
+          'password': password,
+        },
+      ),
     );
-
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      return AuthResult.fromJson(data);
-    } else {
-      final error = jsonDecode(response.body);
-      throw Exception(error['message'] ?? 'Login failed');
-    }
+    return _parseAuthResult(result, 'loginUser');
   }
 
   Future<AuthResult> signup(String email, String password, String name) async {
-    final response = await http.post(
-      Uri.parse(baseUrl),
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({
-        'email': email,
-        'password': password,
-        'name': name,
-      }),
+    final result = await _client.mutate(
+      MutationOptions(
+        document: gql(_registerUserMutation),
+        variables: {
+          'email': email,
+          'password': password,
+          'name': name,
+        },
+      ),
     );
-
-    if (response.statusCode == 201) {
-      final data = jsonDecode(response.body);
-      return AuthResult.fromJson(data);
-    } else {
-      final error = jsonDecode(response.body);
-      throw Exception(error['message'] ?? 'Signup failed');
-    }
+    return _parseAuthResult(result, 'registerUser');
   }
 
   Future<void> forgotPassword(String email) async {
-    final response = await http.post(
-      Uri.parse('$baseUrl/auth/forgot-password'),
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({'email': email}),
+    final result = await _client.mutate(
+      MutationOptions(
+        document: gql(_resetPasswordMutation),
+        variables: {'email': email},
+      ),
     );
-
-    if (response.statusCode != 200) {
-      final error = jsonDecode(response.body);
-      throw Exception(error['message'] ?? 'Failed to send reset email');
+    if (result.hasException) {
+      throw result.exception!;
     }
   }
 
   Future<User> getCurrentUser() async {
-    // This would typically use the stored token to fetch current user
-    // For now, return a mock user
-    return User(
-      id: '1',
-      email: 'user@example.com',
-      name: 'John Doe',
-      createdAt: DateTime(2000, 1, 1),
+    final result = await _client.query(
+      QueryOptions(document: gql(_getViewerQuery)),
     );
+    if (result.hasException) {
+      throw result.exception!;
+    }
+    final data = result.data?['getUser'] as Map<String, dynamic>?;
+    if (data == null) {
+      throw Exception('User data not found');
+    }
+    return User.fromJson(data);
   }
 
   Future<String> refreshToken(String refreshToken) async {
-    final response = await http.post(
-      Uri.parse('$baseUrl/auth/refresh'),
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({'refreshToken': refreshToken}),
+    final result = await _client.mutate(
+      MutationOptions(
+        document: gql(_refreshTokenMutation),
+        variables: {'refreshToken': refreshToken},
+      ),
     );
-
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      return data['token'];
-    } else {
+    if (result.hasException) {
+      throw result.exception!;
+    }
+    final data = result.data?['refreshToken'] as Map<String, dynamic>?;
+    if (data == null) {
       throw Exception('Token refresh failed');
     }
+    return data['token'] as String;
+  }
+
+  AuthResult _parseAuthResult(QueryResult result, String field) {
+    if (result.hasException) {
+      throw result.exception!;
+    }
+    final data = result.data?[field] as Map<String, dynamic>?;
+    if (data == null) {
+      throw Exception('Invalid response');
+    }
+    return AuthResult.fromJson({
+      'token': data['token'],
+      'user': data['user'],
+    });
   }
 }
+

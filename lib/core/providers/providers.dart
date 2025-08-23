@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:http/http.dart' as http;
+import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../config/app_config.dart';
@@ -19,9 +19,18 @@ final appConfigProvider = Provider<AppConfig>((ref) {
 });
 
 // Service Providers
-final authServiceProvider = Provider<AuthService>((ref) {
+final graphQLClientProvider = Provider<GraphQLClient>((ref) {
   final config = ref.watch(appConfigProvider);
-  return AuthService(baseUrl: config.apiBaseUrl);
+  final link = HttpLink(config.apiBaseUrl);
+  return GraphQLClient(
+    link: link,
+    cache: GraphQLCache(store: InMemoryStore()),
+  );
+});
+
+final authServiceProvider = Provider<AuthService>((ref) {
+  final client = ref.watch(graphQLClientProvider);
+  return AuthService(client: client);
 });
 
 final medicationServiceProvider = Provider<MedicationService>((ref) {
@@ -75,18 +84,25 @@ class AuthNotifier extends StateNotifier<AuthState> {
 
   String _parseError(Object error) {
     debugPrint('Auth error: $error');
-    if (error is SocketException || error is http.ClientException) {
+    if (error is OperationException) {
+      if (error.linkException != null) {
+        return 'Unable to connect. Please check your internet connection.';
+      }
+      if (error.graphqlErrors.isNotEmpty) {
+        final message = error.graphqlErrors.first.message;
+        if (message.contains('Invalid credentials') ||
+            message.contains('Login failed')) {
+          return 'Invalid email or password.';
+        }
+        if (message.contains('User already exists') ||
+            message.contains('Email already in use')) {
+          return 'An account with this email already exists.';
+        }
+        return message;
+      }
+    }
+    if (error is SocketException) {
       return 'Unable to connect. Please check your internet connection.';
-    }
-
-    final message = error.toString();
-    if (message.contains('Invalid credentials') ||
-        message.contains('Login failed')) {
-      return 'Invalid email or password.';
-    }
-    if (message.contains('User already exists') ||
-        message.contains('Email already in use')) {
-      return 'An account with this email already exists.';
     }
     return 'Something went wrong. Please try again.';
   }
