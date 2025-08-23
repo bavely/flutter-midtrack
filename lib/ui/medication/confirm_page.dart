@@ -386,11 +386,10 @@ class _ConfirmPageState extends ConsumerState<ConfirmPage> {
       );
 
       // Add medication via provider
-      final success =
-          await ref.read(medicationProvider.notifier).addMedication(medication);
+      final notifier = ref.read(medicationProvider.notifier);
+      final success = await notifier.addMedication(medication);
 
       if (success && mounted) {
-        // Show success message
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('${medication.name} added successfully!'),
@@ -398,9 +397,16 @@ class _ConfirmPageState extends ConsumerState<ConfirmPage> {
             behavior: SnackBarBehavior.floating,
           ),
         );
-
-        // Navigate back to home
         context.go('/');
+      } else if (mounted) {
+        final error = ref.read(medicationProvider).error ?? 'Unknown error';
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error adding medication: $error'),
+            backgroundColor: AppTheme.errorColor,
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
       }
     } catch (e) {
       if (mounted) {

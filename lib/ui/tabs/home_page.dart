@@ -71,7 +71,28 @@ class HomePage extends ConsumerWidget {
                       ],
                     ),
                     const SizedBox(height: 8),
-                    _buildUpcomingDoses(context, medicationState.upcomingDoses),
+                    _buildDoseList(context, medicationState.upcomingDoses),
+
+                    if (medicationState.missedDoses.isNotEmpty) ...[
+                      const SizedBox(height: 24),
+                      Text(
+                        'Missed Doses',
+                        style: Theme.of(context).textTheme.titleLarge,
+                      ),
+                      const SizedBox(height: 8),
+                      _buildDoseList(context, medicationState.missedDoses),
+                    ],
+
+                    if (medicationState.refillAlerts.isNotEmpty) ...[
+                      const SizedBox(height: 24),
+                      Text(
+                        'Refill Alerts',
+                        style: Theme.of(context).textTheme.titleLarge,
+                      ),
+                      const SizedBox(height: 8),
+                      _buildMedicationsList(
+                          context, medicationState.refillAlerts),
+                    ],
 
                     const SizedBox(height: 24),
 
@@ -193,7 +214,7 @@ class HomePage extends ConsumerWidget {
     );
   }
 
-  Widget _buildUpcomingDoses(BuildContext context, List<Dose> doses) {
+  Widget _buildDoseList(BuildContext context, List<Dose> doses) {
     if (doses.isEmpty) {
       return Card(
         child: Padding(

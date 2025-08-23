@@ -2,18 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/theme/app_theme.dart';
+import '../../core/providers/providers.dart';
 import '../widgets/cylindrical_overlay.dart';
 
-class ScanPage extends StatefulWidget {
+class ScanPage extends ConsumerStatefulWidget {
   const ScanPage({super.key});
 
   @override
-  State<ScanPage> createState() => _ScanPageState();
+  ConsumerState<ScanPage> createState() => _ScanPageState();
 }
 
-class _ScanPageState extends State<ScanPage> {
+class _ScanPageState extends ConsumerState<ScanPage> {
   CameraController? _controller;
   bool _isInitialized = false;
   bool _isRecording = false;
@@ -453,42 +455,46 @@ class _ScanPageState extends State<ScanPage> {
     }
   }
 
-  void _processVideo(String videoPath) {
-    // Simulate processing delay
+  void _processVideo(String videoPath) async {
     _showProcessingDialog();
-    
-    Future.delayed(const Duration(seconds: 3), () {
-      Navigator.of(context).pop(); // Close processing dialog
-      
-      // Navigate to confirmation with mock data
-      context.go('/medication/confirm', extra: {
-        'name': 'Lisinopril',
-        'dosage': 10.0,
-        'unit': 'mg',
-        'form': 'tablet',
-        'confidence': 0.92,
-        'imagePath': videoPath,
-      });
-    });
+    try {
+      final data =
+          await ref.read(medicationServiceProvider).parseLabel(videoPath);
+      if (!mounted) return;
+      Navigator.of(context).pop();
+      context.go('/medication/confirm', extra: data);
+    } catch (e) {
+      if (mounted) {
+        Navigator.of(context).pop();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error parsing label: $e'),
+            backgroundColor: AppTheme.errorColor,
+          ),
+        );
+      }
+    }
   }
 
-  void _processImage(String imagePath) {
-    // Simulate processing delay
+  void _processImage(String imagePath) async {
     _showProcessingDialog();
-    
-    Future.delayed(const Duration(seconds: 2), () {
-      Navigator.of(context).pop(); // Close processing dialog
-      
-      // Navigate to confirmation with mock data
-      context.go('/medication/confirm', extra: {
-        'name': 'Metformin',
-        'dosage': 500.0,
-        'unit': 'mg',
-        'form': 'tablet',
-        'confidence': 0.87,
-        'imagePath': imagePath,
-      });
-    });
+    try {
+      final data =
+          await ref.read(medicationServiceProvider).parseLabel(imagePath);
+      if (!mounted) return;
+      Navigator.of(context).pop();
+      context.go('/medication/confirm', extra: data);
+    } catch (e) {
+      if (mounted) {
+        Navigator.of(context).pop();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error parsing label: $e'),
+            backgroundColor: AppTheme.errorColor,
+          ),
+        );
+      }
+    }
   }
 
   void _showProcessingDialog() {
