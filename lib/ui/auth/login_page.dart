@@ -69,14 +69,17 @@ class _LoginPageState extends ConsumerState<LoginPage> {
 
     return Scaffold(
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(24.0),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                const SizedBox(height: 48),
+        child: Column(
+          children: [
+            Expanded(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(24.0),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      const SizedBox(height: 48),
                 
                 // Logo and Title
                 Icon(
@@ -198,20 +201,22 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                     ),
                   ],
                 ),
-                
-                const Spacer(),
-                
-                // Terms and Privacy
-                Text(
-                  'By signing in, you agree to our Terms of Service and Privacy Policy',
-                  style: Theme.of(context).textTheme.bodySmall,
-                  textAlign: TextAlign.center,
-                ),
+
+                const SizedBox(height: 24),
               ],
             ),
           ),
         ),
-      ),
-    );
+        Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: Text(
+            'By signing in, you agree to our Terms of Service and Privacy Policy',
+            style: Theme.of(context).textTheme.bodySmall,
+            textAlign: TextAlign.center,
+          ),
+        ),
+      ],
+    ),
+  );
   }
 }
